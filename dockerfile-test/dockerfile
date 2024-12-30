@@ -1,0 +1,46 @@
+# 多阶段构建(multi-stage build)  多个 FROM 指令 : 每个 FROM 指令是一个新的构建阶段
+# AS 关键字 命名构建 为了后续引用
+# COPY --from 从之前的阶段复制文件到当前阶段
+
+FROM node:22.12.0-alpine3.21 AS build-stage
+
+WORKDIR /nest-docker
+
+COPY package.json .
+
+RUN npm config set registry https://registry.npmmirror.com/
+
+RUN npm install -g pnpm
+
+# 当这里的 npm install 报错时
+# exec: "runc": executable file not found in $PATH
+# 需要在加一行
+# RUN ln -s /sbin/runc /usr/bin/runc
+# 在 dockerfile 中为什么要使用 这行命令 
+# 原因是因为解决 某些 Linux 发型班中 runc 的路径问题
+# 需要注意的是这个问题只会出现在某些 Linux 发行版中
+RUN pnpm install
+
+COPY . .
+
+RUN pnpm run build
+
+
+# 多阶段构建
+FROM node:22.12.0-alpine3.21 AS production-stage
+
+COPY --from=build-stage /nest-docker/dist /nest-docker
+
+COPY --from=build-stage /nest-docker/package.json /nest-docker/package.json
+
+WORKDIR /nest-docker
+
+RUN npm config set registry https://registry.npmmirror.com/
+
+RUN npm install -g pnpm 
+
+RUN pnpm install --production 
+
+EXPOSE 3001
+
+CMD ["node", "/nest-docker/main.js"]
