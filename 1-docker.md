@@ -39,3 +39,31 @@ node_modules/
 - 多阶段构建
   - 将源码目录发送到 docker daemon 中执行 npm run build 来构建产物
   - 之后再 执行 node ./dist/main.js 运行服务
+
+## 提升技巧
+
+- 端口映射、数据卷(volume -v)挂载
+
+```docker
+docker run -p 3000:3000 -v /aaa:/bbb/ccc --name xxx-container xxx-image
+```
+
+- `-p` 端口映射
+- `-v` 指定数据卷挂载 (挂载宿主机/aaa 到容器的 /bbb/ccc 目录 )
+
+- 流程
+
+[!dockerfile](./images/dockerfile.jpg)
+
+```docker
+docker run -d -p 9527:9527 --name docker-coeternal docker-test:nest
+```
+
+- `-d` 为后台运行
+- `-p` 指定端口
+- `--name` 指定容器名称
+- `docker-test:nest` 执行 docker build 后的 images name:tag
+
+- dockerfile 构建镜像 运行流程
+
+[dockerfile-flow](./images/dockerfile-flow.jpg)
