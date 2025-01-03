@@ -67,3 +67,73 @@ docker run -d -p 9527:9527 --name docker-coeternal docker-test:nest
 - dockerfile 构建镜像 运行流程
 
 [dockerfile-flow](./images/dockerfile-flow.jpg)
+
+### 使用 alpine 镜像
+
+- alpine 基于 Alpine Linux 的超小型 Docker 镜像
+- 该镜像只有 5 MB
+
+[Alpine](./images/alpine.jpg)
+
+### 使用多阶段构建
+
+```docker
+# 多阶段构建
+FROM node:22.12.0-alpine3.21 AS build-stage
+
+WORKDIR /nest-app
+
+COPY package.json .
+# COPY *.lock .
+
+RUN npm config set registry https://registry.npmmirror.com/
+
+RUN npm install -g pnpm
+
+RUN pnpm install
+
+COPY . .
+
+RUN pnpm run build
+
+
+# production stage
+
+FROM node:22.12.0-alpine3.21 AS production-stage
+
+COPY --from=build-stage /nest-app/dist /nest-app
+
+COPY --from=build-stage /nest-app/package.json /nest-app/package.json
+
+WORKDIR /nest-app
+
+RUN npm config set registry https://registry.npmmirror.com/
+
+RUN npm instal -g pnpm
+
+RUN pnpm install --prod
+
+EXPOSE 9527
+
+CMD ["node", "./dist/main.js"]
+
+```
+
+- 多阶段构建 --prod 只会下载生产环境下的库
+
+  - devDependencies or production
+  - 开发依赖 是在开发过程中需要的库 如: jest webpack prettier
+  - 生产依赖 是在应用程序运行时实际需要的包
+  - 而 pnpm install --prod 的作用 只安装运行时用到的包 完全跳过 dev 的包
+
+- 潜在问题 :
+
+  - 构建过程依赖: 如果应用程序在运行时需要进行任何构建,而相关工具在 dev 中, 可能会导致错误
+
+- 为什么通常不会出错
+
+  - 构架过程: 在 Dockerfile 中, 构建阶段(build-stage) 已经完成了所有需要开发依赖的工作
+  - 静态文件: 构建后的文件通常是静态的,不需要开发依赖
+  - 正确的依赖分类: 项目中的 package.json 正确区分了开发和生产依赖,那么生产环境应该有所有必要的包
+
+[docker-imags](./images/docker-images.jpg)
