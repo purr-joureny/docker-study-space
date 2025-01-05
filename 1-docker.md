@@ -137,3 +137,14 @@ CMD ["node", "./dist/main.js"]
   - 正确的依赖分类: 项目中的 package.json 正确区分了开发和生产依赖,那么生产环境应该有所有必要的包
 
 [docker-imags](./images/docker-images.jpg)
+
+### 使用 ARG 增加构建灵活性
+
+- ARG: 构建时的变量
+  - 使用 ARG 声明构建时的变量 使用 ${ARGkey} 来读取
+- ENV: 设置环境变量
+  - 使用 ENV 设置构建时的变量
+- dockerfile 中换行使用 \
+- 通过 --build-arg ARGkey=value 传入 ARG 参数的值
+
+[ARG](./images/ARG-ENV.jpg)
