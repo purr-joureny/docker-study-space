@@ -165,3 +165,12 @@ CMD ["node", "./dist/main.js"]
   - 正确的依赖分类: 项目中的 package.json 正确区分了开发和生产依赖,那么生产环境应该有所有必要的包
 
 [docker-imags](./images/docker-images.jpg)
+
+### CMD 结合 ENTRYPOINT
+
+- 在 dockerfile 中 CMD 运行命令是可以进行重写的而 ENTRYPOINT 不会被重写
+- 在执行 docker run 时 ENTRYPOINT 结合 CMD 使用 ENTRYPOINT 就可以起到一个默认值的作用
+
+![CMD 结合 ENTRYPOINT](./images/docker-cmd.jpg)
+
+### COPY vs ADD
