@@ -148,3 +148,17 @@ CMD ["node", "./dist/main.js"]
 - 通过 --build-arg ARGkey=value 传入 ARG 参数的值
 
 [ARG](./images/ARG-ENV.jpg)
+
+### CMD 结合 ENTRYPOINT
+
+- 在 dockerfile 中 CMD 运行命令是可以进行重写的而 ENTRYPOINT 不会被重写
+- 在执行 docker run 时 ENTRYPOINT 结合 CMD 使用 ENTRYPOINT 就可以起到一个默认值的作用
+
+![CMD 结合 ENTRYPOINT](./images/docker-cmd.jpg)
+
+### COPY vs ADD
+
+- 在 dockerfile 中 add 和 copy 都是将本地文件拷贝到 docker 镜像中
+- add 可以下载文件并解压 copy 只是将文件拷贝到镜像中不做任何操作
+
+![add-copy](./images/add-copy.jpg)

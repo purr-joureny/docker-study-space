@@ -174,3 +174,8 @@ CMD ["node", "./dist/main.js"]
 ![CMD 结合 ENTRYPOINT](./images/docker-cmd.jpg)
 
 ### COPY vs ADD
+
+- 在 dockerfile 中 add 和 copy 都是将本地文件拷贝到 docker 镜像中
+- add 可以下载文件并解压 copy 只是将文件拷贝到镜像中不做任何操作
+
+![add-copy](./images/add-copy.jpg)
